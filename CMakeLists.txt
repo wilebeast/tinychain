@@ -1,10 +1,15 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.20)
 PROJECT(tinychain)
 
 SET(CMAKE_VERBOSE_MAKEFILE 1)
 
 SET(ENABLE_SHARED_LIBS OFF CACHE BOOL   "Enable shared libs.")
 SET(MG_ENABLE_DEBUG    OFF CACHE BOOL   "Enable Mongoose debug.")
+
+# 禁用警告转错误
+# if(CMAKE_COMPILER_IS_GNUCC)
+ # target_compile_options(mongoose_static PRIVATE -Wno-error)
+# endif()
 
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE DEBUG)
