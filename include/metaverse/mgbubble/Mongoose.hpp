@@ -17,6 +17,8 @@
 #ifndef MVSD_MONGOOSE_HPP
 #define MVSD_MONGOOSE_HPP
 
+#include <cerrno>
+#include <cstring>
 #include <vector>
 #include <metaverse/mgbubble/utility/Queue.hpp>
 #include <metaverse/mgbubble/utility/String.hpp>
@@ -151,8 +153,12 @@ public:
 #else
       auto* conn = mg_bind(&mgr_, addr, handler);
 #endif
-      if (!conn)
-        throw Error{"mg_bind() failed"};
+      if (!conn) {
+        const auto err = errno;
+        auto& msg = errMsg();
+        msg << "mg_bind() failed (" << err << "): " << std::strerror(err);
+        throw Error{msg};
+      }
       conn->user_data = this;
       return *conn;
     }

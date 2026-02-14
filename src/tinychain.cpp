@@ -108,7 +108,7 @@ Json::Value tx::to_json(){
     return root;
 }
 
-tx::tx(address_t& address) {
+tx::tx(const address_t& address) {
     // coinbase tx: TODO
     auto&& input_item = std::make_tuple("00000000000000000000000000000000", 0, "0ffffffffffffff");
     inputs_.push_back(input_item);
@@ -121,7 +121,7 @@ tx::tx(address_t& address) {
     to_json();
 }
 
-tx::tx(address_t& address, uint64_t amount) {
+tx::tx(const address_t& address, uint64_t amount) {
     //get_balance_from blokchain, P2PKH
     //TODO
     auto&& input_item = std::make_tuple(to_md5(address), 0, "0ffffffffffffff");

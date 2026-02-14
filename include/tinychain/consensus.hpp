@@ -22,19 +22,19 @@ public:
     void print(){ std::cout<<"class miner"<<std::endl; }
 
     //开始挖矿
-    void start(address_t& addr);
-    inline bool pow_once(block& new_block, address_t& addr);
+    void start(address_t addr);
+    inline bool pow_once(block& new_block, const address_t& addr);
 
     // 填写自己奖励——coinbase
-    tx create_coinbase_tx(address_t& addr);
+    tx create_coinbase_tx(const address_t& addr);
 
 private:
     blockchain& chain_;
 };
 
 
-bool validate_tx(const tx& new_tx) ;
+bool validate_tx(blockchain& chain, const tx& new_tx);
 
-bool validate_block(const tx& new_block) ;
+bool validate_block(blockchain& chain, const block& new_block);
 
 }// tinychain

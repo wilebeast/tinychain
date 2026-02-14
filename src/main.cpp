@@ -28,12 +28,8 @@ int main(int argc, char* argv[])
     mg_set_protocol_http_websocket(&conn);
     mg_set_timer(&conn, mg_time() + mgbubble::RestServ::session_check_interval);
 
-    // 启动本地服务
-    log::info("main")<<"httpserver started";
-    Server.run();
 
-
-#if 0 //测试用代码 后续会移除
+#if 1 //测试用代码 后续会移除
     //std::string input = "grape";
     //auto&& output1 = sha256(input);
     //log::info("main") << "sha256('"<< input << "'):" << output1;
@@ -62,6 +58,10 @@ int main(int argc, char* argv[])
     blockchain1.push_block(block3);
     blockchain1.print();
 #endif
+
+    // 启动本地服务
+    log::info("main")<<"httpserver started";
+    Server.run();
 
     return 0;
 }

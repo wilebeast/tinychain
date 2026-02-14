@@ -40,10 +40,22 @@ public:
     chain_database& operator=(chain_database&&)  = default;
     chain_database& operator=(const chain_database&)  = default;
 
-    void print(){
-        //for (auto& each : queue_ ) {
-        //    log::info("block")<<each.to_string();
-        //};
+    void print() override {
+        log::info("database") << "====== Chain Print begin =====";
+        try {
+            sqlite3pp::query qry(db_conn_, "SELECT height, hash, bits, time_stamp FROM block ORDER BY height ASC");
+            for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i) {
+                Json::Value root;
+                root["height"] = static_cast<Json::Int64>((*i).get<long long int>(0));
+                root["hash"] = (*i).get<const char*>(1);
+                root["difficulty"] = static_cast<Json::Int64>((*i).get<long long int>(2));
+                root["timestamp"] = static_cast<Json::Int64>((*i).get<long long int>(3));
+                log::info("block") << root.toStyledString();
+            }
+        } catch (std::exception& ex) {
+            log::error("database") << "chain print error:" << ex.what();
+        }
+        log::info("database") << "====== Chain Print end =====";
     }
     void test();
 

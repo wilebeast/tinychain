@@ -12,12 +12,16 @@
 namespace tinychain
 {
 
-void miner::start(address_t& addr){
+void miner::start(address_t addr){
     for(;;) {
         block new_block;
 
         // 未找到，继续找
         if (!pow_once(new_block, addr)) {
+            continue;
+        }
+
+        if (!validate_block(chain_, new_block)) {
             continue;
         }
 
@@ -32,12 +36,12 @@ void miner::start(address_t& addr){
     }
 }
 
-tx miner::create_coinbase_tx(address_t& addr) {
+tx miner::create_coinbase_tx(const address_t& addr) {
     // TODO
     return tx{addr};
 }
 
-bool miner::pow_once(block& new_block, address_t& addr) {
+bool miner::pow_once(block& new_block, const address_t& addr) {
 
     auto&& pool = chain_.pool();
 
@@ -117,12 +121,41 @@ bool validate_tx(blockchain& chain, const tx& new_tx) {
     return true;
 }
 
-bool validate_block(const tx& new_block) {
-    // TODO
+static sha256_t candidate_block_hash(const block& in) {
+    block tmp(in);
+    tmp.header_.hash.clear();
+    return to_sha256(tmp.to_json());
+}
+
+bool validate_block(blockchain& chain, const block& new_block) {
+    auto&& prev_block = chain.get_last_block();
+
+    if (new_block.header_.height != prev_block.header_.height + 1) {
+        return false;
+    }
+    if (new_block.header_.prev_hash != prev_block.header_.hash) {
+        return false;
+    }
+    if (new_block.header_.hash.size() < 16) {
+        return false;
+    }
+
+    auto&& can = candidate_block_hash(new_block);
+    if (can != new_block.header_.hash) {
+        return false;
+    }
+
+    if (prev_block.header_.difficulty == 0) {
+        return false;
+    }
+    uint64_t target = 0xffffffffffffffff / prev_block.header_.difficulty;
+    uint64_t ncan = std::stoull(new_block.header_.hash.substr(0, 16), 0, 16);
+    if (ncan >= target) {
+        return false;
+    }
 
     return true;
 }
 
 
 } //tinychain
-

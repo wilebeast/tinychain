@@ -133,8 +133,8 @@ public:
     typedef std::vector<output_item_t> output_t;
 
     tx() {}
-    tx(address_t& address); //coinbase
-    tx(address_t& address, uint64_t amount); 
+    tx(const address_t& address); //coinbase
+    tx(const address_t& address, uint64_t amount); 
 
     tx(const tx& rt) {
        inputs_ = rt.inputs(); 
