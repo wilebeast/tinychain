@@ -12,7 +12,35 @@ namespace tinychain
 
 bool commands::exec(Json::Value& out){
     try {
-        if (*(vargv_.begin()) == "getnewkey") {
+        static const std::string help_text = R"(Commands:
+  help
+    Print this help message.
+
+  getnewkey
+    Generate a new RSA keypair, store it in tinychain.db (key_pairs), and return {address, public_key, private_key}.
+
+  listkeys
+    List all keys in the local wallet database (key_pairs).
+
+  getlastblock
+    Fetch and return the last block header stored in tinychain.db (block table).
+
+  getheight
+    Return current chain height from tinychain.db.
+
+  getbalance
+    Not implemented yet.
+
+  send <address> <amount>
+    Create a transaction to <address> and put it into the in-memory mempool (not persisted yet).
+
+  startmining [address]
+    Start mining in a detached thread. If address omitted, a random wallet address is generated for rewards.)";
+
+        if (vargv_.empty() || *(vargv_.begin()) == "help") {
+            out = help_text;
+            return true;
+        } else if (*(vargv_.begin()) == "getnewkey") {
             auto&& key = node_.chain().get_new_key_pair();
             out = key.to_json();
         } else if  (*(vargv_.begin()) == "listkeys") {
@@ -47,7 +75,7 @@ bool commands::exec(Json::Value& out){
                 out["result"] = "start mining on a random address of your wallet";
             }
         } else {
-            out = "<getnewkey>  <listkeys>  <getlastblock> <getheight> <getbalance>  <send>  <startmining>";
+            out = help_text;
             return false;
         }
     } catch (std::exception& ex) {
@@ -58,8 +86,7 @@ bool commands::exec(Json::Value& out){
     return true;
 }
 
-const commands::vargv_t command_list = {"getnewkey","getlastblock","getheight","send","getbalance", "startmining"};
+const commands::vargv_t commands::commands_list = {"help", "getnewkey","listkeys","getlastblock","getheight","send","getbalance","startmining"};
 
 
 } //tinychain
-
